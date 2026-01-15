@@ -2,25 +2,45 @@ body {
   background-color: #000000;
   margin: 0;
   padding: 0;
+  color: white;
 }
-p {
-  color: #ffffff
-}
+
 .app {
   display: flex;
   flex-direction: column;
 }
+
 .bottomRow {
   display: flex;
 }
+
 .sideBar {
   height: 95vh;
-  width: 20vw;
+  max-width: 10vw;
   background-color: #1A1A1A;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+.sideBar a {
+  text-decoration: none;
+  color: inherit;
+}
+.currentPage {
+  font-weight: bold;
+}
+
+.categories {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+.categories ul {
+  margin-left: 2em;
+  margin-right: 1em;
+  padding: 0;
+}
+
 .settingsBar {
   height: 5vh;
   width: 100vw;
@@ -29,11 +49,13 @@ p {
   justify-content: flex-end;
   margin-left: auto;
 }
+
 .settingsBarIcon {
   margin: 1vh;
   height: 3vh;
   width: auto;
 }
+
 .workspace {
   background-color: #000000;
   width: 80vw;
