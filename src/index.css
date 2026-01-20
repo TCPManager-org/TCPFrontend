@@ -70,6 +70,9 @@ body {
   max-width: 50%;
   margin:1em;
 }
+.stats > div {
+  height: 47.5vh;
+}
 
 .login-wrapper {
   display: flex;

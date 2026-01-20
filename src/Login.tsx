@@ -54,7 +54,6 @@ function Login({setToken}: Readonly<LoginProps>) {
       username: username,
       password: password
     });
-    console.log(result);
     if (result.success) {
       setToken(result.token);
     } else {

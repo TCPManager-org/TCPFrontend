@@ -9,7 +9,7 @@ import Login from "./Login.tsx";
 import useToken from "./UseToken.tsx";
 
 function App() {
-  const { token, setToken } = useToken();
+  const { token, setToken } = useToken()
 
   if (!token) {
     return <Login setToken={setToken}/>
@@ -23,7 +23,7 @@ function App() {
             <SideBar/>
             <div className={"workspace"}>
               <Routes>
-                <Route path="/dashboard" element={<Dashboard/>}/>
+                <Route path="/" element={<Dashboard/>}/>
                 <Route path="/intake" element={<Intake/>}/>
                 <Route path="/stats" element={<Stats/>}/>
               </Routes>
