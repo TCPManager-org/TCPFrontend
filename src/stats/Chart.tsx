@@ -1,21 +1,37 @@
+import { Legend, Line, LineChart, XAxis, YAxis } from 'recharts';
+interface DataPoint {
+  x: string | number;
+  [key: string]: string | number;
+}
 type ChartProps = {
-  data: Record<string, Array<{ x: string | number; y: number }>>,
+  data: DataPoint[]
+  lineNames: string[]
 };
 
-function Chart({data}: Readonly<ChartProps>) {
+function Chart({data, lineNames}: Readonly<ChartProps>) {
+  const colors = ['#ffffff', '#c9a2bf', '#89cff0', '#964b00']
   return (
-      <div>
-        {Object.entries(data).map(([nutrient, points]) => (
-            <div key={nutrient}>
-              <h3>{nutrient}</h3>
-              {points.map((point, i) => (
-                  <p key={i}>
-                    x: {point.x}, y: {point.y.toFixed(2)}%
-                  </p>
-              ))}
-            </div>
-        ))}
-      </div>
+        <LineChart
+            style={{ width: '100%', height: '100%' }}
+            data={data}
+        >
+          <XAxis dataKey="x" domain={['auto', 'auto']} />
+          <YAxis label={{ value: '%', position: 'insideLeft' }} />
+          <Legend
+              verticalAlign="top"
+              align="center"
+          />
+          {lineNames.map((name, index) => (
+              <Line
+                  key={name}
+                  type="monotone"
+                  dataKey={name}
+                  stroke={colors[index]}
+                  strokeWidth={2}
+                  dot={false}
+              />
+          ))}
+        </LineChart>
   )
 }
 

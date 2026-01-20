@@ -21,7 +21,6 @@ function App() {
           <SettingsBar/>
           <div className={"bottomRow"}>
             <SideBar/>
-            <Dashboard/>
             <div className={"workspace"}>
               <Routes>
                 <Route path="/" element={<Dashboard/>}/>

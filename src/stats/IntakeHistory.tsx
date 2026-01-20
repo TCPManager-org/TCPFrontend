@@ -3,6 +3,15 @@ import Chart from "./Chart.tsx";
 import {useEffect, useState} from "react";
 import UseToken from "../UseToken.tsx";
 
+type NutritionData = {
+  x: string;
+  calories: number;
+  fat: number;
+  protein: number;
+  carbs: number;
+};
+const nutrients = ['calories', 'fat', 'protein', 'carbs'] as const;
+
 async function getHistory(token: string) {
   try {
 
@@ -43,12 +52,9 @@ async function getHistory(token: string) {
 
 async function prepareData(token: string) {
   const {success, data, message, status} = await getHistory(token)
-  const result: Record<string, Array<{ x: string; y: number }>> = {
-    calories: [],
-    fat: [],
-    protein: [],
-    carbs: []
-  };
+
+  const result: NutritionData[] = []
+
   if (!success) {
     console.error(`Error fetching intake history: ${message} (status: ${status})`)
     alert(message || "Request failed")
@@ -59,29 +65,30 @@ async function prepareData(token: string) {
     console.error("Data is not an array", data);
     return result;
   }
-  
+
   for (let i = 0; i < entries.length; i++) {
     const entry = data[i]
-    console.log("Entry " + i + ": " + entry)
-    for (const nutrient in result) {
+    const entryResult: NutritionData = {
+      x: entry.date,
+      calories: 0,
+      fat: 0,
+      protein: 0,
+      carbs: 0,
+    };
+    for (const nutrient of nutrients) {
       const value = Number(entry[nutrient]) || 0;
       const goal = Number(entry[`${nutrient}Goal`]) || 0;
-      const percent = goal ? (value / goal) * 100 : 0;
-      result[nutrient].push({
-        x: entry.date,
-        y: percent
-      });
+      entryResult[nutrient] = goal ? (value / goal) * 100 : 0;
     }
+    result.push(entryResult);
   }
-  for (const nutrient in result) {
-    result[nutrient].sort((a, b) => a.x.localeCompare(b.x));
-  }
+  console.log(result);
   return result;
 }
 
 function IntakeHistory() {
   const {token} = UseToken()
-  const [chartData, setChartData] = useState<Record<string, Array<{ x: string; y: number }>>>({});
+  const [chartData, setChartData] = useState<NutritionData[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -96,7 +103,7 @@ function IntakeHistory() {
   }, [token]);
 
   return (<div className="IntakeHistory">
-    <Chart data={chartData}/>
+    <Chart data={chartData} lineNames={[...nutrients]}/>
   </div>);
 }
 
