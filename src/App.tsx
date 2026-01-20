@@ -5,8 +5,16 @@ import SideBar from "./SideBar.tsx";
 import Dashboard from "./workspaces/Dashboard.tsx";
 import Intake from "./workspaces/Intake.tsx";
 import Stats from "./workspaces/Stats.tsx";
+import Login from "./Login.tsx";
+import useToken from "./UseToken.tsx";
 
 function App() {
+  const { token, setToken } = useToken();
+
+  if (!token) {
+    return <Login setToken={setToken}/>
+  }
+
   return (
       <Router>
         <div className="app">
