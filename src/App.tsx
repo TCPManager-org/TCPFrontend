@@ -23,9 +23,8 @@ function App() {
             <SideBar/>
             <Dashboard/>
             <div className={"workspace"}>
-              <Dashboard/>
               <Routes>
-                <Route path="/" element={<Dashboard/>}/>
+                <Route path="/dashboard" element={<Dashboard/>}/>
                 <Route path="/intake" element={<Intake/>}/>
                 <Route path="/stats" element={<Stats/>}/>
               </Routes>
