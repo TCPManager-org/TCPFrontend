@@ -60,8 +60,8 @@ async function prepareData(token: string) {
     alert(message || "Request failed")
     return result
   }
-  const entries = Array.isArray(data) ? data : data.history;
-  if (!entries || !Array.isArray(entries)) {
+  const entries = data;
+  if (!entries || !Array.isArray(data)) {
     console.error("Data is not an array", data);
     return result;
   }
@@ -82,7 +82,6 @@ async function prepareData(token: string) {
     }
     result.push(entryResult);
   }
-  console.log(result);
   return result;
 }
 

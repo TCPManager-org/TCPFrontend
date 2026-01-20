@@ -1,5 +1,6 @@
 import {LastDaysCalendar} from "../calories/Calendar.tsx";
 import {useState} from "react";
+import MealList from "../calories/MealList.tsx";
 
 function Intake() {
     // async function getIntake() {
@@ -27,7 +28,7 @@ function Intake() {
             </div>
           </div>
           <div className="meals">
-            <p>Test</p>
+            <MealList />
           </div>
         </div>
     );
