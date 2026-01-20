@@ -1,10 +1,7 @@
-import {LastDaysCalendar} from "../calories/Calendar.tsx";
+import {LastDaysCalendar} from "../intake/Calendar.tsx";
 import {useState} from "react";
 
 function Intake() {
-    // async function getIntake() {
-    //
-    // }
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const handleDateChange = (date: Date) => {
@@ -14,7 +11,7 @@ function Intake() {
     };
 
     return (
-        <div className="intake">
+        <div className="days">
             <div className="intake-calendar-wrapper">
                 <LastDaysCalendar
                     selectedDate={selectedDate}
