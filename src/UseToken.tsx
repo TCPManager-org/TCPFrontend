@@ -13,7 +13,6 @@ function UseToken() {
   const [token, setToken] = useState<string | null>(getToken())
   
   const saveToken = (userToken: string) => {
-    console.log(userToken);
     sessionStorage.setItem('token', JSON.stringify(userToken));
     setToken(userToken);
   }

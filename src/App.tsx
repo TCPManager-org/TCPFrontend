@@ -9,7 +9,7 @@ import Login from "./Login.tsx";
 import useToken from "./UseToken.tsx";
 
 function App() {
-  const { token, setToken } = useToken();
+  const { token, setToken } = useToken()
 
   if (!token) {
     return <Login setToken={setToken}/>
