@@ -1,7 +1,10 @@
-import {LastDaysCalendar} from "../intake/Calendar.tsx";
+import {LastDaysCalendar} from "../calories/Calendar.tsx";
 import {useState} from "react";
 
 function Intake() {
+    // async function getIntake() {
+    //
+    // }
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     const handleDateChange = (date: Date) => {
@@ -11,18 +14,22 @@ function Intake() {
     };
 
     return (
-        <div className="days">
+        <div className="intake">
+          <div className="days">
             <div className="intake-calendar-wrapper">
-                <LastDaysCalendar
-                    selectedDate={selectedDate}
-                    onDateSelect={handleDateChange}
-                />
+              <LastDaysCalendar
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateChange}/>
             </div>
 
             <div className="intake-content">
-                <p>Widok dla dnia: {selectedDate.toLocaleDateString('pl-PL')}</p>
+              <p>Widok dla dnia: {selectedDate.toLocaleDateString('pl-PL')}</p>
 
             </div>
+          </div>
+          <div className="meals">
+            <p>Test</p>
+          </div>
         </div>
     );
 }

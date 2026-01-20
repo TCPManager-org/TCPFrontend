@@ -102,7 +102,7 @@ function IntakeHistory() {
     fetchData();
   }, [token]);
 
-  return (<div className="IntakeHistory">
+  return (<div className="intakeHistory">
     <Chart data={chartData} lineNames={[...nutrients]}/>
   </div>);
 }

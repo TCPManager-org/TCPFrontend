@@ -64,13 +64,21 @@ body {
   margin: 0;
   padding: 0;
 }
-.workspace > div {
+.intake {
+  max-width: 50%;
+  display: flex;
+}
+.intake > div {
+  background-color: #1A1A1A;
+  margin-left: 1em;
+  margin-top: 1em;
+  padding: 1em;
+}
+.intakeHistory {
   padding: 1em;
   background-color: #1A1A1A;
   max-width: 50%;
   margin:1em;
-}
-.stats > div {
   height: 47.5vh;
 }
 
