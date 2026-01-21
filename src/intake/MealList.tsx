@@ -1,77 +1,62 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
 type Ingredient = {
-  id: number,
-  name: string
-}
+  id: number;
+  name: string;
+};
 
 type MealData = {
-  id: number,
-  name: string,
-  calories: number,
-  fats: string,
-  carbs: string,
-  protein: string,
-  ingredients: Ingredient[]
+  id: number;
+  name: string;
+  calories: number;
+  fats: string;
+  carbs: string;
+  protein: string;
+  ingredients: Ingredient[];
 };
 
 async function getMeals(token: string) {
   try {
-    const response = await axios.get('api/calories/meals',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-    return {success: true, data: response.data}
+    const response = await axios.get("api/calories/meals", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return { success: true, data: response.data };
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       if (error.response) {
-        return {
-          success: false,
-          status: error.response?.status,
-          message: "Request failed"
-        };
+        return { success: false, status: error.response.status, message: "Request failed" };
       }
       if (error.request) {
-        return {
-          success: false,
-          status: error.request?.status,
-          message: "Cannot reach server"
-        }
+        return { success: false, status: error.request.status, message: "Cannot reach server" };
       }
-      return {
-        success: false,
-        message: "Unexpected Axios error"
-      };
+      return { success: false, message: "Unexpected Axios error" };
     }
-    return {
-      success: false,
-      message: "Unexpected error"
-    };
+    return { success: false, message: "Unexpected error" };
   }
 }
 
 async function prepareData(token: string) {
-  const {success, data, message, status} = await getMeals(token)
+  const { success, data, message, status } = await getMeals(token);
+  const result: MealData[] = [];
 
-  const result: MealData[] = []
   if (!success) {
-    console.error(`Error fetching intake history: ${message} (status: ${status})`)
-    alert(message || "Request failed")
+    console.error(`Error fetching meals: ${message} (status: ${status})`);
+    alert(message || "Request failed");
+    return result;
   }
-  const entries = data;
-  if (!entries || !Array.isArray(data)) {
+
+  if (!data || !Array.isArray(data)) {
     console.error("Data is not an array", data);
     return result;
   }
-  for (const entry of entries) {
+
+  for (const entry of data) {
     const ingredients: Ingredient[] = [];
 
     for (const [id, name] of Object.entries(entry.ingredients)) {
-      ingredients.push({id: Number(id), name: String(name)});
+      ingredients.push({ id: Number(id), name: String(name) });
     }
 
     result.push({
@@ -81,79 +66,78 @@ async function prepareData(token: string) {
       fats: entry.fats,
       carbs: entry.carbs,
       protein: entry.proteins,
-      ingredients: ingredients
+      ingredients,
     });
   }
 
   return result;
 }
 
-function MealItem({meal}: Readonly<{ meal: MealData }>) {
-  const [showIngredients, setShowIngredients] = useState(false);
-
-  return (
-      <li key={meal.id} className="meal-item">
-        <h3>{meal.name}</h3>
-        <div className="meal-macros">
-          <ul>
-            <li>Calories: {meal.calories}kcal</li>
-            <li>Protein: {meal.protein}g</li>
-            <li>Carbs: {meal.carbs}g</li>
-            <li>Fats: {meal.fats}g</li>
-          </ul>
-        </div>
-        {meal.ingredients.length > 0 && (
-            <div className="meal-ingredients">
-          <span
-              onClick={() => setShowIngredients(!showIngredients)}
-              style={{cursor: "pointer"}}
-          >
-            {showIngredients ? "Hide Ingredients" : "Show Ingredients"}
-          </span>
-              {showIngredients && (
-                  <ul>
-                    {meal.ingredients.map((ingredient) => (
-                        <li key={ingredient.id}>{ingredient.name}</li>
-                    ))}
-                  </ul>
-              )}
-            </div>
-        )}
-      </li>
-  );
-}
-
-
-function MealList() {
-  const {token} = UseToken();
+export default function MealList() {
+  const { token } = UseToken();
   const [meals, setMeals] = useState<MealData[]>([]);
+  const [showIngredients, setShowIngredients] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     async function fetchData() {
-      if (!token) {
-        return;
-      }
+      if (!token) return;
       const data = await prepareData(token);
       setMeals(data);
     }
-
     fetchData();
   }, [token]);
+
+  const toggleIngredients = (mealId: number) => {
+    setShowIngredients((prev) => ({ ...prev, [mealId]: !prev[mealId] }));
+  };
+
+  if (meals.length === 0) return <p>No meals found.</p>;
 
   return (
       <div className="meal-list">
         <h2>Meals</h2>
-        {meals.length === 0 ? (
-            <p>No meals found.</p>
-        ) : (
-            <ul>
-              {meals.map((meal) => (
-                  <MealItem key={meal.id} meal={meal}/>
-              ))}
-            </ul>
-        )}
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+          <tr>
+            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Meal Name</th>
+            <th style={{ borderBottom: "1px solid #ccc" }}>Calories</th>
+            <th style={{ borderBottom: "1px solid #ccc" }}>Protein (g)</th>
+            <th style={{ borderBottom: "1px solid #ccc" }}>Carbs (g)</th>
+            <th style={{ borderBottom: "1px solid #ccc" }}>Fats (g)</th>
+            <th style={{ borderBottom: "1px solid #ccc" }}>Ingredients</th>
+          </tr>
+          </thead>
+          <tbody>
+          {meals.map((meal) => (
+              <tr key={meal.id}>
+                <td style={{ padding: "0.5rem" }}>{meal.name}</td>
+                <td style={{ textAlign: "center" }}>{meal.calories}</td>
+                <td style={{ textAlign: "center" }}>{meal.protein}</td>
+                <td style={{ textAlign: "center" }}>{meal.carbs}</td>
+                <td style={{ textAlign: "center" }}>{meal.fats}</td>
+                <td style={{ padding: "0.5rem", textAlign: "left" }}>
+                  {meal.ingredients.length > 0 ? (
+                      <span
+                          onClick={() => toggleIngredients(meal.id)}
+                          style={{ cursor: "pointer" }}
+                      >
+                    {showIngredients[meal.id] ? "Hide" : "Show"} Ingredients
+                  </span>
+                  ) : (
+                      "No ingredients"
+                  )}
+                  {showIngredients[meal.id] && (
+                      <ul style={{ margin: "0.5rem 0 0 0", paddingLeft: "1rem" }}>
+                        {meal.ingredients.map((ingredient) => (
+                            <li key={ingredient.id}>{ingredient.name}</li>
+                        ))}
+                      </ul>
+                  )}
+                </td>
+              </tr>
+          ))}
+          </tbody>
+        </table>
       </div>
   );
 }
-
-export default MealList;
