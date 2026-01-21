@@ -2,12 +2,12 @@ type AddButtonsProps = {
   adding: boolean
   confirmAdd: () => void
   cancelAdd: () => void
-  setIsAdding: (value: boolean) => void
+  onStart: () => void
 }
 
-function AddButtons({adding, confirmAdd, cancelAdd, setIsAdding}: Readonly<AddButtonsProps>) {
+function AddButtons({adding, confirmAdd, cancelAdd, onStart}: Readonly<AddButtonsProps>) {
   return (
-      <div className="addButtons">
+      <span className="addButtons">
         {adding ? (
                 <>
                   <img
@@ -32,11 +32,11 @@ function AddButtons({adding, confirmAdd, cancelAdd, setIsAdding}: Readonly<AddBu
                     className="guiIcon"
                     src="src/assets/addElement.svg"
                     alt="Add"
-                    onClick={() => setIsAdding(true)}
+                    onClick={onStart}
                     style={{cursor: "pointer"}}
                 />
             )}
-      </div>
+      </span>
   )
 }
 export default AddButtons;

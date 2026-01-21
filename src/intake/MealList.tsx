@@ -1,6 +1,6 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
-import {useEffect, useState} from "react";
+import {type Dispatch, type SetStateAction, useEffect, useState} from "react";
 import AddButtons from "./AddButtons.tsx";
 
 type Ingredient = {
@@ -79,13 +79,20 @@ type MealProps = {
   setIsAddingMeal: (value: boolean) => void
   ingredientListForMeal: number[]
   setIngredientListForMeal: (value: number[]) => void
+  addingMealToDay: boolean
+  setAddedMealToDay: Dispatch<SetStateAction<{
+    id: number;
+    weight: number;
+  }>>
 };
 
 export default function MealList({
                                    addingMeal,
                                    setIsAddingMeal,
                                    ingredientListForMeal,
-                                   setIngredientListForMeal
+                                   setIngredientListForMeal,
+                                   addingMealToDay,
+                                   setAddedMealToDay
                                  }: Readonly<MealProps>) {
   const {token} = UseToken();
   const [meals, setMeals] = useState<MealData[]>([]);
@@ -161,7 +168,8 @@ export default function MealList({
       <div className="meal-list">
         <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
           Meals
-          <AddButtons adding={addingMeal} confirmAdd={addMealRequest} cancelAdd={cancelAddMeal} setIsAdding={setIsAddingMeal}/>
+          <AddButtons adding={addingMeal} confirmAdd={addMealRequest} cancelAdd={cancelAddMeal}
+                      onStart={() => setIsAddingMeal(true)}/>
           {addingMeal && (<input
               type="text"
               placeholder="Meal Name"
@@ -178,7 +186,7 @@ export default function MealList({
             <th style={{borderBottom: "1px solid #ccc"}}>Protein (g)</th>
             <th style={{borderBottom: "1px solid #ccc"}}>Carbs (g)</th>
             <th style={{borderBottom: "1px solid #ccc"}}>Fats (g)</th>
-            <th style={{borderBottom: "1px solid #ccc"}}>Ingredients</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>{addingMealToDay ? "Add" : "Ingredients"}</th>
           </tr>
           </thead>
           <tbody>
@@ -189,7 +197,20 @@ export default function MealList({
                 <td style={{textAlign: "center"}}>{meal.protein}</td>
                 <td style={{textAlign: "center"}}>{meal.carbs}</td>
                 <td style={{textAlign: "center"}}>{meal.fats}</td>
-                <td style={{padding: "0.5rem", textAlign: "left"}}>
+
+                {addingMealToDay ? (
+                    <td style={{textAlign: "center"}}>
+                      <input type="text" id="meal"
+                             name="meal"
+                             min="1"
+                             onChange={(e) => {
+                               setAddedMealToDay({
+                                 id: meal.id,
+                                 weight: Number(e.target.value)
+                               })
+                             }
+                             }/>
+                    </td>) : (<td style={{padding: "0.5rem", textAlign: "left"}}>
                   {meal.ingredients.length > 0 ? (
                       <span
                           onClick={() => toggleIngredients(meal.id)}
@@ -207,7 +228,8 @@ export default function MealList({
                         ))}
                       </ul>
                   )}
-                </td>
+                </td>)}
+
               </tr>
           ))}
           </tbody>
