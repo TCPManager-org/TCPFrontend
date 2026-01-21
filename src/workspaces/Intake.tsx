@@ -1,5 +1,8 @@
 import Day from "../intake/Day.tsx";
 
+import {LastDaysCalendar} from "../calories/Calendar.tsx";
+import {useState} from "react";
+import MealList from "../calories/MealList.tsx";
 
 function Intake() {
 
@@ -9,9 +12,9 @@ function Intake() {
             <div className="days">
                 <Day/>
             </div>
-            <div className="meals">
-                <p>Test</p>
-            </div>
+          <div className="meals">
+            <MealList />
+          </div>
         </div>
     );
 }
