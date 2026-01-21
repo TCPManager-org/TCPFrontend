@@ -47,7 +47,7 @@ async function loginUser(credentials: { username: string, password: string }) {
 function Login({setToken}: Readonly<LoginProps>) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = await loginUser({

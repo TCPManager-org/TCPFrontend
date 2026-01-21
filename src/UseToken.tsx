@@ -1,7 +1,7 @@
 import {useState} from "react";
 
 function UseToken() {
-  
+
   const getToken = (): string | null => {
     const tokenString = sessionStorage.getItem('token');
     if (!tokenString) {
@@ -11,7 +11,7 @@ function UseToken() {
   }
   
   const [token, setToken] = useState<string | null>(getToken())
-  
+
   const saveToken = (userToken: string) => {
     sessionStorage.setItem('token', JSON.stringify(userToken));
     setToken(userToken);
@@ -21,4 +21,5 @@ function UseToken() {
     token
   }
 }
+
 export default UseToken;

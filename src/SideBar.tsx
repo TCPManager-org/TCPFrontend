@@ -7,20 +7,20 @@ function SideBar() {
           <ul>
 
             <li>
-              <NavLink to="/" 
+              <NavLink to="/"
                        className={({isActive}) => isActive ? "currentPage" : ""}>
                 Dashboard
               </NavLink>
             </li>
             <li>
-              <NavLink to="/intake" 
+              <NavLink to="/intake"
                        className={({isActive}) => isActive ? "currentPage" : ""}>
                 Intake
               </NavLink>
             </li>
             <li>Workout</li>
             <li>
-              <NavLink to="/stats" 
+              <NavLink to="/stats"
                        className={({isActive}) => isActive ? "currentPage" : ""}>
                 Stats
               </NavLink>

@@ -1,6 +1,7 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
 import {useEffect, useState} from "react";
+
 type Ingredient = {
   id: number,
   name: string
@@ -70,7 +71,7 @@ async function prepareData(token: string) {
     const ingredients: Ingredient[] = [];
 
     for (const [id, name] of Object.entries(entry.ingredients)) {
-      ingredients.push({ id: Number(id), name: String(name)});
+      ingredients.push({id: Number(id), name: String(name)});
     }
 
     result.push({
@@ -86,7 +87,8 @@ async function prepareData(token: string) {
 
   return result;
 }
-function MealItem({ meal }: { meal: MealData }) {
+
+function MealItem({meal}: Readonly<{ meal: MealData }>) {
   const [showIngredients, setShowIngredients] = useState(false);
 
   return (
@@ -104,7 +106,7 @@ function MealItem({ meal }: { meal: MealData }) {
             <div className="meal-ingredients">
           <span
               onClick={() => setShowIngredients(!showIngredients)}
-              style={{ cursor: "pointer"}}
+              style={{cursor: "pointer"}}
           >
             {showIngredients ? "Hide Ingredients" : "Show Ingredients"}
           </span>
@@ -123,7 +125,7 @@ function MealItem({ meal }: { meal: MealData }) {
 
 
 function MealList() {
-  const { token } = UseToken();
+  const {token} = UseToken();
   const [meals, setMeals] = useState<MealData[]>([]);
 
   useEffect(() => {
@@ -134,6 +136,7 @@ function MealList() {
       const data = await prepareData(token);
       setMeals(data);
     }
+
     fetchData();
   }, [token]);
 
@@ -145,7 +148,7 @@ function MealList() {
         ) : (
             <ul>
               {meals.map((meal) => (
-                  <MealItem key={meal.id} meal={meal} />
+                  <MealItem key={meal.id} meal={meal}/>
               ))}
             </ul>
         )}

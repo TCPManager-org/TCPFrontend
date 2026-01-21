@@ -22,10 +22,12 @@ body {
   flex-direction: column;
   align-items: center;
 }
+
 .sideBar a {
   text-decoration: none;
   color: inherit;
 }
+
 .currentPage {
   font-weight: bold;
 }
@@ -35,6 +37,7 @@ body {
   flex-direction: column;
   align-items: start;
 }
+
 .categories ul {
   margin-left: 2em;
   margin-right: 1em;
@@ -64,21 +67,24 @@ body {
   margin: 0;
   padding: 0;
 }
+
 .intake {
   max-width: 50%;
   display: flex;
 }
+
 .intake > div {
   background-color: #1A1A1A;
   margin-left: 1em;
   margin-top: 1em;
   padding: 1em;
 }
+
 .intakeHistory {
   padding: 1em;
   background-color: #1A1A1A;
   max-width: 50%;
-  margin:1em;
+  margin: 1em;
   height: 47.5vh;
 }
 
