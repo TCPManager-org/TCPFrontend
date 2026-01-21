@@ -1,7 +1,7 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
-import { useEffect, useMemo, useState } from "react";
-import { LastDaysCalendar } from "./Calendar.tsx";
+import {useEffect, useMemo, useState} from "react";
+import {LastDaysCalendar} from "./Calendar.tsx";
 import deleteForeverIcon from "../assets/deleteForever.svg";
 import "../day.css";
 
@@ -23,27 +23,27 @@ type MealData = {
 async function getDays(token: string) {
     try {
         const response = await axios.get("api/calories/days", {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {Authorization: `Bearer ${token}`},
         });
-        return { success: true, data: response.data };
+        return {success: true, data: response.data};
     } catch (error: unknown) {
         if (axios.isAxiosError(error)) {
-            if (error.response) return { success: false, status: error.response.status, message: "Request failed" };
-            if (error.request) return { success: false, status: error.request.status, message: "Cannot reach server" };
-            return { success: false, message: "Unexpected Axios error" };
+            if (error.response) return {success: false, status: error.response.status, message: "Request failed"};
+            if (error.request) return {success: false, status: error.request.status, message: "Cannot reach server"};
+            return {success: false, message: "Unexpected Axios error"};
         }
-        return { success: false, message: "Unexpected error" };
+        return {success: false, message: "Unexpected error"};
     }
 }
 
 async function deleteMealFromDay(token: string, date: string, dayMealId: number) {
     await axios.delete(`api/calories/days/${date}/${dayMealId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {Authorization: `Bearer ${token}`},
     });
 }
 
 async function prepareData(token: string) {
-    const { success, data, message, status } = await getDays(token);
+    const {success, data, message, status} = await getDays(token);
     const result: DayData[] = [];
 
     if (!success) {
@@ -64,7 +64,7 @@ async function prepareData(token: string) {
 
         for (const dayMeal of entry.dayMeals) {
             mealsToGroup.push({
-                id: dayMeal.id, // IMPORTANT: this must exist in backend response
+                id: dayMeal.id,
                 name: dayMeal.meal.name,
                 weight: dayMeal.weight,
                 calories: (dayMeal.weight * dayMeal.meal.calories) / 100,
@@ -94,7 +94,7 @@ async function prepareData(token: string) {
 }
 
 function Day() {
-    const { token } = UseToken();
+    const {token} = UseToken();
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [days, setDays] = useState<DayData[]>([]);
 
@@ -104,6 +104,7 @@ function Day() {
             const data = await prepareData(token);
             setDays(data);
         }
+
         fetchData();
     }, [token]);
 
@@ -114,7 +115,7 @@ function Day() {
     const currentDay: DayData =
         days.find((day) => day.date === dateKey) || {
             date: dateKey,
-            meals: { breakfast: [], secondBreakfast: [], lunch: [], dinner: [], snack: [], other: [] },
+            meals: {breakfast: [], secondBreakfast: [], lunch: [], dinner: [], snack: [], other: []},
         };
 
     const onDelete = async (dayMealId: number) => {
@@ -132,7 +133,7 @@ function Day() {
                             mealList.filter((m) => m.id !== dayMealId),
                         ])
                     ) as DayData["meals"];
-                    return { ...d, meals: nextMeals };
+                    return {...d, meals: nextMeals};
                 })
             );
         } catch (e) {
@@ -144,7 +145,7 @@ function Day() {
     return (
         <>
             <div className="intakeCalendarWrapper">
-                <LastDaysCalendar selectedDate={selectedDate} onDateSelect={handleDateChange} />
+                <LastDaysCalendar selectedDate={selectedDate} onDateSelect={handleDateChange}/>
             </div>
 
             <div className="intakeContent">
@@ -158,7 +159,8 @@ function Day() {
                                     <ul>
                                         {mealList.map((meal) => (
                                             <li key={meal.id}>
-                                                {meal.name} — {meal.calories} kcal, {meal.protein}g protein, {meal.fat}g fat,{" "}
+                                                {meal.name} — {meal.calories} kcal, {meal.protein}g protein, {meal.fat}g
+                                                fat,{" "}
                                                 {meal.carbs}g carbs, {meal.weight}g
                                                 {" "}
 
@@ -169,7 +171,7 @@ function Day() {
                                                     title="Delete"
                                                     className="deleteIconButton"
                                                 >
-                                                    <img src={deleteForeverIcon} alt="" className="deleteIconImg" />
+                                                    <img src={deleteForeverIcon} alt="" className="deleteIconImg"/>
                                                 </button>
                                             </li>
                                         ))}
