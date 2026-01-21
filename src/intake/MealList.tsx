@@ -1,6 +1,7 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
 import {useEffect, useState} from "react";
+import AddButtons from "./AddButtons.tsx";
 
 type Ingredient = {
   id: number;
@@ -90,11 +91,13 @@ export default function MealList({
   const [meals, setMeals] = useState<MealData[]>([]);
   const [showIngredients, setShowIngredients] = useState<Record<number, boolean>>({});
   const [newName, setNewName] = useState<string>("");
+
   async function fetchData() {
     if (!token) return;
     const data = await prepareData(token);
     setMeals(data);
   }
+
   useEffect(() => {
     fetchData();
   }, [fetchData, token]);
@@ -120,7 +123,7 @@ export default function MealList({
         }
       }
     }
-    if(ingredients.length == 0) {
+    if (ingredients.length == 0) {
       alert("Meal must have at least one ingredient");
       setNewName("");
       setIsAddingMeal(false)
@@ -147,94 +150,68 @@ export default function MealList({
       alert("Failed to add ingredient.");
     }
   }
-    if (meals.length === 0) return <p>No meals found.</p>;
+  const cancelAddMeal = () => {
+    setIsAddingMeal(false);
+    setIngredientListForMeal([]);
+    setNewName("");
+  }
+  if (meals.length === 0) return <p>No meals found.</p>;
 
-    return (
-        <div className="meal-list">
-          <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
-            Meals
-            {addingMeal ? (
-                    <>
-                      <img
-                          className="guiIcon"
-                          src="src/assets/confirm.svg"
-                          alt="Confirm"
-                          onClick={() => addMealRequest()}
+  return (
+      <div className="meal-list">
+        <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
+          Meals
+          <AddButtons adding={addingMeal} confirmAdd={addMealRequest} cancelAdd={cancelAddMeal} setIsAdding={setIsAddingMeal}/>
+          {addingMeal && (<input
+              type="text"
+              placeholder="Meal Name"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              style={{marginLeft: "1rem"}}
+          />)}
+        </h2>
+        <table style={{width: "100%", borderCollapse: "collapse"}}>
+          <thead>
+          <tr>
+            <th style={{borderBottom: "1px solid #ccc", textAlign: "left"}}>Meal Name</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Calories</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Protein (g)</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Carbs (g)</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Fats (g)</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Ingredients</th>
+          </tr>
+          </thead>
+          <tbody>
+          {meals.map((meal) => (
+              <tr key={meal.id}>
+                <td style={{padding: "0.5rem"}}>{meal.name}</td>
+                <td style={{textAlign: "center"}}>{meal.calories}</td>
+                <td style={{textAlign: "center"}}>{meal.protein}</td>
+                <td style={{textAlign: "center"}}>{meal.carbs}</td>
+                <td style={{textAlign: "center"}}>{meal.fats}</td>
+                <td style={{padding: "0.5rem", textAlign: "left"}}>
+                  {meal.ingredients.length > 0 ? (
+                      <span
+                          onClick={() => toggleIngredients(meal.id)}
                           style={{cursor: "pointer"}}
-                      />
-                      <img
-                          className="guiIcon"
-                          src="src/assets/cancel.svg"
-                          alt="Cancel"
-                          onClick={() => {
-                            setIsAddingMeal(false);
-                            setIngredientListForMeal([]);
-                            setNewName("");
-                          }}
-
-                          style={{cursor: "pointer"}}
-                      />
-                      <input
-                          type="text"
-                          placeholder="Meal Name"
-                          value={newName}
-                          onChange={(e) => setNewName(e.target.value)}
-                          style={{marginLeft: "1rem"}}
-                      />
-                    </>
-                )
-                : (
-                    <img
-                        className="guiIcon"
-                        src="src/assets/addElement.svg"
-                        alt="Add"
-                        onClick={() => setIsAddingMeal(true)}
-                        style={{cursor: "pointer"}}
-                    />
-                )}
-          </h2>
-          <table style={{width: "100%", borderCollapse: "collapse"}}>
-            <thead>
-            <tr>
-              <th style={{borderBottom: "1px solid #ccc", textAlign: "left"}}>Meal Name</th>
-              <th style={{borderBottom: "1px solid #ccc"}}>Calories</th>
-              <th style={{borderBottom: "1px solid #ccc"}}>Protein (g)</th>
-              <th style={{borderBottom: "1px solid #ccc"}}>Carbs (g)</th>
-              <th style={{borderBottom: "1px solid #ccc"}}>Fats (g)</th>
-              <th style={{borderBottom: "1px solid #ccc"}}>Ingredients</th>
-            </tr>
-            </thead>
-            <tbody>
-            {meals.map((meal) => (
-                <tr key={meal.id}>
-                  <td style={{padding: "0.5rem"}}>{meal.name}</td>
-                  <td style={{textAlign: "center"}}>{meal.calories}</td>
-                  <td style={{textAlign: "center"}}>{meal.protein}</td>
-                  <td style={{textAlign: "center"}}>{meal.carbs}</td>
-                  <td style={{textAlign: "center"}}>{meal.fats}</td>
-                  <td style={{padding: "0.5rem", textAlign: "left"}}>
-                    {meal.ingredients.length > 0 ? (
-                        <span
-                            onClick={() => toggleIngredients(meal.id)}
-                            style={{cursor: "pointer"}}
-                        >
+                      >
                     {showIngredients[meal.id] ? "Hide" : "Show"} Ingredients
                   </span>
-                    ) : (
-                        "No ingredients"
-                    )}
-                    {showIngredients[meal.id] && (
-                        <ul style={{margin: "0.5rem 0 0 0", paddingLeft: "1rem"}}>
-                          {meal.ingredients.map((ingredient) => (
-                              <li key={ingredient.id}>{ingredient.name}</li>
-                          ))}
-                        </ul>
-                    )}
-                  </td>
-                </tr>
-            ))}
-            </tbody>
-          </table>
-        </div>
-    );
-  }
+                  ) : (
+                      "No ingredients"
+                  )}
+                  {showIngredients[meal.id] && (
+                      <ul style={{margin: "0.5rem 0 0 0", paddingLeft: "1rem"}}>
+                        {meal.ingredients.map((ingredient) => (
+                            <li key={ingredient.id}>{ingredient.name}</li>
+                        ))}
+                      </ul>
+                  )}
+                </td>
+              </tr>
+          ))}
+          </tbody>
+        </table>
+      </div>
+  );
+}
