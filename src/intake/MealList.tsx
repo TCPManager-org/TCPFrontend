@@ -162,7 +162,6 @@ export default function MealList({
     setIngredientListForMeal([]);
     setNewName("");
   }
-  if (meals.length === 0) return <p>No meals found.</p>;
 
   return (
       <div className="meal-list">
