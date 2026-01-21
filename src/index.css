@@ -102,7 +102,7 @@ body {
 .intake th,
 .intake td {
   padding: 8px;
-  text-align: left;
+  text-align: center;
   white-space: nowrap;
 }
 

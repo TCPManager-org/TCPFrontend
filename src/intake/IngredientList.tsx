@@ -1,6 +1,7 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
 import {type Dispatch, type SetStateAction, useEffect, useState} from "react";
+import deleteForeverIcon from "../assets/deleteForever.svg";
 
 type IngredientData = {
   id?: number,
@@ -100,7 +101,12 @@ function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<Ingredi
   const handleChange = (field: keyof IngredientData, value: string | number) => {
     setNewIngredient({ ...newIngredient, [field]: value });
   };
-
+  const deleteIngredient = async (id: number | undefined) => {
+    if(!id || !token) return;
+    await axios.delete(`api/calories/ingredients/${id}`, {
+      headers: {Authorization: `Bearer ${token}`},
+    });
+  }
   const handleAddClick = async () => {
     try {
       setLoading(true);
@@ -119,7 +125,7 @@ function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<Ingredi
         proteins: 0,
         ean: "",
       });
-      setIsAdding(false); // go back to list view
+      setIsAdding(false);
     } catch (error) {
       console.error("Failed to add ingredient:", error);
       alert("Failed to add ingredient.");
@@ -127,18 +133,16 @@ function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<Ingredi
       setLoading(false);
     }
   };
-  
-  useEffect(() => {
-    async function fetchData() {
-      if (!token) {
-        return;
-      }
-      const data = await prepareData(token);
-      setIngredients(data);
+  async function fetchData() {
+    if (!token) {
+      return;
     }
-
+    const data = await prepareData(token);
+    setIngredients(data);
+  }
+  useEffect(() => {
     fetchData();
-  }, [token]);
+  }, [token, fetchData]);
 
   return (
       <div>
@@ -214,6 +218,7 @@ function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<Ingredi
                   <th>Carbs (g)</th>
                   <th>Fats (g)</th>
                   <th>{addingMeal ? "Weight" : "EAN"}</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -232,6 +237,7 @@ function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<Ingredi
                           return newList;
                         });
                       }}></input> : ingredient.ean}</td>
+                      <td><img src={deleteForeverIcon} alt="Delete" className="deleteIconImg" style={{cursor: "pointer"}} onClick={() => deleteIngredient(ingredient.id)}/></td>
                     </tr>
                 ))}
                 </tbody>

@@ -229,7 +229,7 @@ function Day({isAdding, setIsAdding, addedMeal}: Readonly<DayProps>) {
                                   title="Delete"
                                   className="deleteIconButton"
                               >
-                                <img src={deleteForeverIcon} alt="" className="deleteIconImg"/>
+                                <img src={deleteForeverIcon} alt="Delete" className="deleteIconImg"/>
                               </button>
                             </li>
                         ))}
