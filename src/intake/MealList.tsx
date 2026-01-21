@@ -8,7 +8,7 @@ type Ingredient = {
 }
 
 type MealData = {
-  id: string,
+  id: number,
   name: string,
   calories: number,
   fats: string,

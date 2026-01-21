@@ -78,6 +78,7 @@ body {
   margin-left: 1em;
   margin-top: 1em;
   padding: 1em;
+  flex-wrap: nowrap;
 }
 
 .intakeHistory {
@@ -93,6 +94,28 @@ body {
   flex-direction: column;
   align-items: center;
 }
-.meals {
-  flex-wrap: nowrap;
+
+.ingredient-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ingredient-list th,
+.ingredient-list td {
+  padding: 8px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ingredient-list th {
+  font-weight: bold;
+  border-bottom: 1px solid #ccc;
+}
+
+.ingredient-list td {
+  border-bottom: 1px solid #eee;
+}
+
+.addElementIcon {
+  vertical-align: middle;
 }

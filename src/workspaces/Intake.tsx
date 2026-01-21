@@ -1,5 +1,6 @@
 import Day from "../intake/Day.tsx";
 import MealList from "../intake/MealList.tsx";
+import IngredientList from "../intake/IngredientList.tsx";
 
 
 function Intake() {
@@ -12,6 +13,9 @@ function Intake() {
         </div>
         <div className="meals">
           <MealList/>
+        </div>
+        <div className="ingredients">
+          <IngredientList/>
         </div>
       </div>
   );
