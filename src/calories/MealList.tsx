@@ -84,7 +84,6 @@ async function prepareData(token: string) {
     });
   }
 
-  console.log(result)
   return result;
 }
 function MealItem({ meal }: { meal: MealData }) {
