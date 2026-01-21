@@ -146,7 +146,7 @@ function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<Ingredi
           Ingredients
           {!isAdding && !addingMeal && (
               <img
-                  className="addElementIcon"
+                  className="guiIcon"
                   src="src/assets/addElement.svg"
                   alt="Add"
                   onClick={() => setIsAdding(true)}

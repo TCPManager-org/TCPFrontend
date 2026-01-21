@@ -156,14 +156,14 @@ export default function MealList({
             {addingMeal ? (
                     <>
                       <img
-                          className="addElementIcon"
+                          className="guiIcon"
                           src="src/assets/confirm.svg"
                           alt="Confirm"
                           onClick={() => addMealRequest()}
                           style={{cursor: "pointer"}}
                       />
                       <img
-                          className="addElementIcon"
+                          className="guiIcon"
                           src="src/assets/cancel.svg"
                           alt="Cancel"
                           onClick={() => {
@@ -185,7 +185,7 @@ export default function MealList({
                 )
                 : (
                     <img
-                        className="addElementIcon"
+                        className="guiIcon"
                         src="src/assets/addElement.svg"
                         alt="Add"
                         onClick={() => setIsAddingMeal(true)}
