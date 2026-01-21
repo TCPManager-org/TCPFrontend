@@ -60,7 +60,7 @@ async function prepareData(token: string) {
     alert(message || "Request failed")
     return result
   }
-  const entries = Array.isArray(data) ? data : data.history;
+  const entries = data;
   if (!entries || !Array.isArray(entries)) {
     console.error("Data is not an array", data);
     return result;
