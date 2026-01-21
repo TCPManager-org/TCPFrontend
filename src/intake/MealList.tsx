@@ -1,6 +1,6 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 type Ingredient = {
   id: number;
@@ -20,25 +20,25 @@ type MealData = {
 async function getMeals(token: string) {
   try {
     const response = await axios.get("api/calories/meals", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {Authorization: `Bearer ${token}`},
     });
-    return { success: true, data: response.data };
+    return {success: true, data: response.data};
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       if (error.response) {
-        return { success: false, status: error.response.status, message: "Request failed" };
+        return {success: false, status: error.response.status, message: "Request failed"};
       }
       if (error.request) {
-        return { success: false, status: error.request.status, message: "Cannot reach server" };
+        return {success: false, status: error.request.status, message: "Cannot reach server"};
       }
-      return { success: false, message: "Unexpected Axios error" };
+      return {success: false, message: "Unexpected Axios error"};
     }
-    return { success: false, message: "Unexpected error" };
+    return {success: false, message: "Unexpected error"};
   }
 }
 
 async function prepareData(token: string) {
-  const { success, data, message, status } = await getMeals(token);
+  const {success, data, message, status} = await getMeals(token);
   const result: MealData[] = [];
 
   if (!success) {
@@ -56,7 +56,7 @@ async function prepareData(token: string) {
     const ingredients: Ingredient[] = [];
 
     for (const [id, name] of Object.entries(entry.ingredients)) {
-      ingredients.push({ id: Number(id), name: String(name) });
+      ingredients.push({id: Number(id), name: String(name)});
     }
 
     result.push({
@@ -73,71 +73,168 @@ async function prepareData(token: string) {
   return result;
 }
 
-export default function MealList() {
-  const { token } = UseToken();
+type MealProps = {
+  addingMeal: boolean
+  setIsAddingMeal: (value: boolean) => void
+  ingredientListForMeal: number[]
+  setIngredientListForMeal: (value: number[]) => void
+};
+
+export default function MealList({
+                                   addingMeal,
+                                   setIsAddingMeal,
+                                   ingredientListForMeal,
+                                   setIngredientListForMeal
+                                 }: Readonly<MealProps>) {
+  const {token} = UseToken();
   const [meals, setMeals] = useState<MealData[]>([]);
   const [showIngredients, setShowIngredients] = useState<Record<number, boolean>>({});
-
+  const [newName, setNewName] = useState<string>("");
+  async function fetchData() {
+    if (!token) return;
+    const data = await prepareData(token);
+    setMeals(data);
+  }
   useEffect(() => {
-    async function fetchData() {
-      if (!token) return;
-      const data = await prepareData(token);
-      setMeals(data);
-    }
     fetchData();
-  }, [token]);
+  }, [fetchData, token]);
 
   const toggleIngredients = (mealId: number) => {
-    setShowIngredients((prev) => ({ ...prev, [mealId]: !prev[mealId] }));
+    setShowIngredients((prev) => ({...prev, [mealId]: !prev[mealId]}));
   };
+  const addMealRequest = async () => {
+    setNewName(newName.trim())
+    if (!newName || newName.length < 1) {
+      alert("Meal name cannot be empty");
+      setNewName("");
+      setIsAddingMeal(false)
+      setIngredientListForMeal([])
+      return;
+    }
+    let ingredients: Record<string, number> = {}
+    for (let i = 0; i < ingredientListForMeal.length; i++) {
+      if (ingredientListForMeal[i] !== undefined) {
+        ingredients = {
+          ...ingredients,
+          [i]: ingredientListForMeal[i]
+        }
+      }
+    }
+    if(ingredients.length == 0) {
+      alert("Meal must have at least one ingredient");
+      setNewName("");
+      setIsAddingMeal(false)
+      setIngredientListForMeal([])
+      return;
+    }
+    const newMeal = {
+      name: newName,
+      ingredients: ingredients
+    }
+    setNewName("");
+    setIsAddingMeal(false)
+    setIngredientListForMeal([])
+    try {
+      await axios.post("/api/calories/meals", newMeal,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+      await fetchData()
+    } catch (error) {
+      console.error("Failed to add ingredient:", error);
+      alert("Failed to add ingredient.");
+    }
+  }
+    if (meals.length === 0) return <p>No meals found.</p>;
 
-  if (meals.length === 0) return <p>No meals found.</p>;
+    return (
+        <div className="meal-list">
+          <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
+            Meals
+            {addingMeal ? (
+                    <>
+                      <img
+                          className="guiIcon"
+                          src="src/assets/confirm.svg"
+                          alt="Confirm"
+                          onClick={() => addMealRequest()}
+                          style={{cursor: "pointer"}}
+                      />
+                      <img
+                          className="guiIcon"
+                          src="src/assets/cancel.svg"
+                          alt="Cancel"
+                          onClick={() => {
+                            setIsAddingMeal(false);
+                            setIngredientListForMeal([]);
+                            setNewName("");
+                          }}
 
-  return (
-      <div className="meal-list">
-        <h2>Meals</h2>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-          <tr>
-            <th style={{ borderBottom: "1px solid #ccc", textAlign: "left" }}>Meal Name</th>
-            <th style={{ borderBottom: "1px solid #ccc" }}>Calories</th>
-            <th style={{ borderBottom: "1px solid #ccc" }}>Protein (g)</th>
-            <th style={{ borderBottom: "1px solid #ccc" }}>Carbs (g)</th>
-            <th style={{ borderBottom: "1px solid #ccc" }}>Fats (g)</th>
-            <th style={{ borderBottom: "1px solid #ccc" }}>Ingredients</th>
-          </tr>
-          </thead>
-          <tbody>
-          {meals.map((meal) => (
-              <tr key={meal.id}>
-                <td style={{ padding: "0.5rem" }}>{meal.name}</td>
-                <td style={{ textAlign: "center" }}>{meal.calories}</td>
-                <td style={{ textAlign: "center" }}>{meal.protein}</td>
-                <td style={{ textAlign: "center" }}>{meal.carbs}</td>
-                <td style={{ textAlign: "center" }}>{meal.fats}</td>
-                <td style={{ padding: "0.5rem", textAlign: "left" }}>
-                  {meal.ingredients.length > 0 ? (
-                      <span
-                          onClick={() => toggleIngredients(meal.id)}
-                          style={{ cursor: "pointer" }}
-                      >
+                          style={{cursor: "pointer"}}
+                      />
+                      <input
+                          type="text"
+                          placeholder="Meal Name"
+                          value={newName}
+                          onChange={(e) => setNewName(e.target.value)}
+                          style={{marginLeft: "1rem"}}
+                      />
+                    </>
+                )
+                : (
+                    <img
+                        className="guiIcon"
+                        src="src/assets/addElement.svg"
+                        alt="Add"
+                        onClick={() => setIsAddingMeal(true)}
+                        style={{cursor: "pointer"}}
+                    />
+                )}
+          </h2>
+          <table style={{width: "100%", borderCollapse: "collapse"}}>
+            <thead>
+            <tr>
+              <th style={{borderBottom: "1px solid #ccc", textAlign: "left"}}>Meal Name</th>
+              <th style={{borderBottom: "1px solid #ccc"}}>Calories</th>
+              <th style={{borderBottom: "1px solid #ccc"}}>Protein (g)</th>
+              <th style={{borderBottom: "1px solid #ccc"}}>Carbs (g)</th>
+              <th style={{borderBottom: "1px solid #ccc"}}>Fats (g)</th>
+              <th style={{borderBottom: "1px solid #ccc"}}>Ingredients</th>
+            </tr>
+            </thead>
+            <tbody>
+            {meals.map((meal) => (
+                <tr key={meal.id}>
+                  <td style={{padding: "0.5rem"}}>{meal.name}</td>
+                  <td style={{textAlign: "center"}}>{meal.calories}</td>
+                  <td style={{textAlign: "center"}}>{meal.protein}</td>
+                  <td style={{textAlign: "center"}}>{meal.carbs}</td>
+                  <td style={{textAlign: "center"}}>{meal.fats}</td>
+                  <td style={{padding: "0.5rem", textAlign: "left"}}>
+                    {meal.ingredients.length > 0 ? (
+                        <span
+                            onClick={() => toggleIngredients(meal.id)}
+                            style={{cursor: "pointer"}}
+                        >
                     {showIngredients[meal.id] ? "Hide" : "Show"} Ingredients
                   </span>
-                  ) : (
-                      "No ingredients"
-                  )}
-                  {showIngredients[meal.id] && (
-                      <ul style={{ margin: "0.5rem 0 0 0", paddingLeft: "1rem" }}>
-                        {meal.ingredients.map((ingredient) => (
-                            <li key={ingredient.id}>{ingredient.name}</li>
-                        ))}
-                      </ul>
-                  )}
-                </td>
-              </tr>
-          ))}
-          </tbody>
-        </table>
-      </div>
-  );
-}
+                    ) : (
+                        "No ingredients"
+                    )}
+                    {showIngredients[meal.id] && (
+                        <ul style={{margin: "0.5rem 0 0 0", paddingLeft: "1rem"}}>
+                          {meal.ingredients.map((ingredient) => (
+                              <li key={ingredient.id}>{ingredient.name}</li>
+                          ))}
+                        </ul>
+                    )}
+                  </td>
+                </tr>
+            ))}
+            </tbody>
+          </table>
+        </div>
+    );
+  }

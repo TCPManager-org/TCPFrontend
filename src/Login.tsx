@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {type FormEvent, useState} from "react";
 import axios from "axios";
 
 type LoginProps = {
@@ -48,7 +48,7 @@ function Login({setToken}: Readonly<LoginProps>) {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const result = await loginUser({
       username: username,

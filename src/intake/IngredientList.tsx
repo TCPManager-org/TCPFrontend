@@ -1,6 +1,6 @@
 import axios from "axios";
 import UseToken from "../UseToken.tsx";
-import {useEffect, useState} from "react";
+import {type Dispatch, type SetStateAction, useEffect, useState} from "react";
 
 type IngredientData = {
   id?: number,
@@ -78,8 +78,13 @@ async function prepareData(token: string) {
 
   return result;
 }
+type IngredientProps = {
+  addingMeal: boolean
+  setIngredientListForMeal: Dispatch<SetStateAction<number[]>>;
 
-function IngredientList() {
+};
+
+function IngredientList({addingMeal, setIngredientListForMeal}: Readonly<IngredientProps>) {
   const {token} = UseToken();
   const [ingredients, setIngredients] = useState<IngredientData[]>([]);
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -139,9 +144,9 @@ function IngredientList() {
       <div>
         <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
           Ingredients
-          {!isAdding && (
+          {!isAdding && !addingMeal && (
               <img
-                  className="settingsBarIcon"
+                  className="guiIcon"
                   src="src/assets/addElement.svg"
                   alt="Add"
                   onClick={() => setIsAdding(true)}
@@ -208,7 +213,7 @@ function IngredientList() {
                   <th>Protein (g)</th>
                   <th>Carbs (g)</th>
                   <th>Fats (g)</th>
-                  <th>EAN</th>
+                  <th>{addingMeal ? "Weight" : "EAN"}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -219,7 +224,14 @@ function IngredientList() {
                       <td>{ingredient.proteins}</td>
                       <td>{ingredient.carbs}</td>
                       <td>{ingredient.fats}</td>
-                      <td>{ingredient.ean}</td>
+                      <td>{addingMeal ? <input type={"text"} onChange={(e) => {
+                        const value = Number(e.target.value);
+                        setIngredientListForMeal((prev: number[]) => {
+                          const newList = [...prev];
+                          newList[ingredient.id!] = value;
+                          return newList;
+                        });
+                      }}></input> : ingredient.ean}</td>
                     </tr>
                 ))}
                 </tbody>
