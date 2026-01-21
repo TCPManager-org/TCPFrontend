@@ -93,3 +93,6 @@ body {
   flex-direction: column;
   align-items: center;
 }
+.meals {
+  flex-wrap: nowrap;
+}
