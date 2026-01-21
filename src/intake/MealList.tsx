@@ -2,10 +2,10 @@ import axios from "axios";
 import UseToken from "../UseToken.tsx";
 import {type Dispatch, type SetStateAction, useEffect, useState} from "react";
 import AddButtons from "./AddButtons.tsx";
+import deleteForeverIcon from "../assets/deleteForever.svg";
 
 type Ingredient = {
-  id: number;
-  name: string;
+  id: number; name: string;
 };
 
 type MealData = {
@@ -81,8 +81,7 @@ type MealProps = {
   setIngredientListForMeal: (value: number[]) => void
   addingMealToDay: boolean
   setAddedMealToDay: Dispatch<SetStateAction<{
-    id: number;
-    weight: number;
+    id: number; weight: number;
   }>>
 };
 
@@ -98,6 +97,12 @@ export default function MealList({
   const [meals, setMeals] = useState<MealData[]>([]);
   const [showIngredients, setShowIngredients] = useState<Record<number, boolean>>({});
   const [newName, setNewName] = useState<string>("");
+  const deleteMeal = async (id: number | undefined) => {
+    if (!id || !token) return;
+    await axios.delete(`api/calories/meals/${id}`, {
+      headers: {Authorization: `Bearer ${token}`},
+    });
+  }
 
   async function fetchData() {
     if (!token) return;
@@ -125,8 +130,7 @@ export default function MealList({
     for (let i = 0; i < ingredientListForMeal.length; i++) {
       if (ingredientListForMeal[i] !== undefined) {
         ingredients = {
-          ...ingredients,
-          [i]: ingredientListForMeal[i]
+          ...ingredients, [i]: ingredientListForMeal[i]
         }
       }
     }
@@ -138,19 +142,17 @@ export default function MealList({
       return;
     }
     const newMeal = {
-      name: newName,
-      ingredients: ingredients
+      name: newName, ingredients: ingredients
     }
     setNewName("");
     setIsAddingMeal(false)
     setIngredientListForMeal([])
     try {
-      await axios.post("/api/calories/meals", newMeal,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
+      await axios.post("/api/calories/meals", newMeal, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       await fetchData()
     } catch (error) {
       console.error("Failed to add ingredient:", error);
@@ -163,8 +165,7 @@ export default function MealList({
     setNewName("");
   }
 
-  return (
-      <div className="meal-list">
+  return (<div className="meal-list">
         <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
           Meals
           <AddButtons adding={addingMeal} confirmAdd={addMealRequest} cancelAdd={cancelAddMeal}
@@ -186,53 +187,42 @@ export default function MealList({
             <th style={{borderBottom: "1px solid #ccc"}}>Carbs (g)</th>
             <th style={{borderBottom: "1px solid #ccc"}}>Fats (g)</th>
             <th style={{borderBottom: "1px solid #ccc"}}>{addingMealToDay ? "Add" : "Ingredients"}</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Delete</th>
           </tr>
           </thead>
           <tbody>
-          {meals.map((meal) => (
-              <tr key={meal.id}>
+          {meals.map((meal) => (<tr key={meal.id}>
                 <td style={{padding: "0.5rem"}}>{meal.name}</td>
                 <td style={{textAlign: "center"}}>{meal.calories}</td>
                 <td style={{textAlign: "center"}}>{meal.protein}</td>
                 <td style={{textAlign: "center"}}>{meal.carbs}</td>
                 <td style={{textAlign: "center"}}>{meal.fats}</td>
 
-                {addingMealToDay ? (
-                    <td style={{textAlign: "center"}}>
-                      <input type="text" id="meal"
-                             name="meal"
-                             min="1"
-                             onChange={(e) => {
-                               setAddedMealToDay({
-                                 id: meal.id,
-                                 weight: Number(e.target.value)
-                               })
-                             }
-                             }/>
-                    </td>) : (<td style={{padding: "0.5rem", textAlign: "left"}}>
-                  {meal.ingredients.length > 0 ? (
-                      <span
+                {addingMealToDay ? (<td style={{textAlign: "center"}}>
+                  <input type="text" id="meal"
+                         name="meal"
+                         min="1"
+                         onChange={(e) => {
+                           setAddedMealToDay({
+                             id: meal.id, weight: Number(e.target.value)
+                           })
+                         }}/>
+                </td>) : (<td style={{padding: "0.5rem", textAlign: "left"}}>
+                  {(<span
                           onClick={() => toggleIngredients(meal.id)}
                           style={{cursor: "pointer"}}
                       >
                     {showIngredients[meal.id] ? "Hide" : "Show"} Ingredients
-                  </span>
-                  ) : (
-                      "No ingredients"
-                  )}
+                  </span>)}
                   {showIngredients[meal.id] && (
                       <ul style={{margin: "0.5rem 0 0 0", paddingLeft: "1rem"}}>
                         {meal.ingredients.map((ingredient) => (
-                            <li key={ingredient.id}>{ingredient.name}</li>
-                        ))}
-                      </ul>
-                  )}
+                            <li key={ingredient.id}>{ingredient.name}</li>))}
+                      </ul>)}
                 </td>)}
-
-              </tr>
-          ))}
+            <td><img src={deleteForeverIcon} alt="Delete" className="deleteIconImg" style={{cursor: "pointer"}} onClick={() => deleteMeal(meal.id)}/></td>
+              </tr>))}
           </tbody>
         </table>
-      </div>
-  );
+      </div>);
 }
