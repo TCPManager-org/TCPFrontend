@@ -15,6 +15,7 @@ type MealData = {
   fats: string;
   carbs: string;
   protein: string;
+  weight: number;
   ingredients: Ingredient[];
 };
 
@@ -67,6 +68,7 @@ async function prepareData(token: string) {
       fats: entry.fats,
       carbs: entry.carbs,
       protein: entry.proteins,
+      weight: entry.weight,
       ingredients,
     });
   }
@@ -169,7 +171,8 @@ export default function MealList({
         <h2 style={{display: "flex", alignItems: "center", gap: "0.5rem"}}>
           Meals
           <AddButtons adding={addingMeal} confirmAdd={addMealRequest} cancelAdd={cancelAddMeal}
-                      onStart={() => setIsAddingMeal(true)}/>
+                      onStart={() => setIsAddingMeal(true)}
+          srcOfMainIcon={"src/assets/addElement.svg"}/>
           {addingMeal && (<input
               type="text"
               placeholder="Meal Name"
@@ -187,6 +190,7 @@ export default function MealList({
             <th style={{borderBottom: "1px solid #ccc"}}>Carbs (g)</th>
             <th style={{borderBottom: "1px solid #ccc"}}>Fats (g)</th>
             <th style={{borderBottom: "1px solid #ccc"}}>{addingMealToDay ? "Add" : "Ingredients"}</th>
+            <th style={{borderBottom: "1px solid #ccc"}}>Weight</th>
             <th style={{borderBottom: "1px solid #ccc"}}>Delete</th>
           </tr>
           </thead>
@@ -220,6 +224,7 @@ export default function MealList({
                             <li key={ingredient.id}>{ingredient.name}</li>))}
                       </ul>)}
                 </td>)}
+                <td>{meal.weight}</td>
             <td><img src={deleteForeverIcon} alt="Delete" className="deleteIconImg" style={{cursor: "pointer"}} onClick={() => deleteMeal(meal.id)}/></td>
               </tr>))}
           </tbody>

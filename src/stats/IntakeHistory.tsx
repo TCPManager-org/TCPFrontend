@@ -6,11 +6,11 @@ import UseToken from "../UseToken.tsx";
 type NutritionData = {
   x: string;
   calories: number;
-  fat: number;
+  fats: number;
   protein: number;
   carbs: number;
 };
-const nutrients = ['calories', 'fat', 'protein', 'carbs'] as const;
+const nutrients = ['calories', 'fats', 'protein', 'carbs'] as const;
 
 async function getHistory(token: string) {
   try {
@@ -71,7 +71,7 @@ async function prepareData(token: string) {
     const entryResult: NutritionData = {
       x: entry.date,
       calories: 0,
-      fat: 0,
+      fats: 0,
       protein: 0,
       carbs: 0,
     };
@@ -82,7 +82,6 @@ async function prepareData(token: string) {
     }
     result.push(entryResult);
   }
-  console.log(result);
   return result;
 }
 

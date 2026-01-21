@@ -55,7 +55,7 @@ async function prepareData(token: string) {
 
   const result: IngredientData[] = []
   if (!success) {
-    console.error(`Error fetching intake history: ${message} (status: ${status})`)
+    console.error(`Error fetching ingredients: ${message} (status: ${status})`)
     alert(message || "Request failed")
   }
   const entries = data;
